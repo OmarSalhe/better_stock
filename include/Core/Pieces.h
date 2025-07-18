@@ -25,7 +25,6 @@ static const int KING_VALUE =   9999; // Arbitrary value for kings (enforce pref
 // bit masks
 static const uint8_t TYPE_MASK =       0b00000111; // bits 1-3 dedicated for piece types
 static const uint8_t COLOR_MASK =      0b00001000; // bits 4 is dedicated for piece color
-static const uint8_t UNMOVED_MASK =    0b00010000; // bits 5 dedicated for first-move status
 
 
 // colors
