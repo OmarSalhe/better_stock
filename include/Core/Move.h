@@ -1,6 +1,7 @@
 #ifndef Move
 #define Move
-#include <stdint.h>
+
+typedef unsigned int uint;
 
 /**
  * move info:
@@ -9,29 +10,26 @@
  *  bits 12-14: flags (en passant, castling, promotion, etc.)
  * 
  * state_info:
- *  bits 0-3: castling legality
- *  bits 4-8: ep square (starting at 1, so 0 = no ep square)
- *  bits 9-11: captured piece
- *  bits 12...: fifty move counter
+ *  bits 15-18: castling legality (0: w king, 1: w queen, 2: b king, 3: b queen)
+ *  bits 19-23: ep square (starting at 1, so 0 = no ep square)
+ *  bits 24-26: captured piece
+ *  bits 27...: fifty move counter
  */
 
 struct game_state_stack_node {
-    uint32_t board_state;
-    uint16_t move;
+    uint state_info;
     struct game_state_stack_node *prev_state;
 };
 
 typedef struct game_state_stack_node game_state;
 
-enum flags {NONE, ENPASSANT, CASTLE, PROMOTE_QUEEN, PROMOTE_ROOK, PROMOTE_BISHOP, PROMOTE_KNIGHT, PAWN_TWO};
+enum flags { NONE, ENPASSANT, CASTLE, PROMOTE_QUEEN, PROMOTE_ROOK, PROMOTE_BISHOP, PROMOTE_KNIGHT, PAWN_TWO_FORWARD };
 
-static const uint32_t CASTLING_MASK =   0b00000000000000000000000000001111;
-static const uint32_t EP_MASK =         0b00000000000000000000000011110000;
-static const uint32_t CAPTURE_MASK =    0b00000000000000000001111100000000;
+static const uint SQUARE_MASK =     0b000000000000000000000111111;
+static const uint FLAG_MASK =       0b000000000000111000000000000;
+static const uint CASTLING_MASK =   0b000000001111000000000000000;
+static const uint EP_MASK =         0b000111110000000000000000000;
+static const uint CAPTURE_MASK =    0b111000000000000000000000000;
 
-// copy current state to a new node, 
-game_state *push_move(game_state *cur);
-// update most recent state as prev and return
-game_state *pop_move(game_state *cur);
 
 #endif

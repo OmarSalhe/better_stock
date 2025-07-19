@@ -1,5 +1,5 @@
 #include "Board.h"
-#include "Pieces.h"
+#include <stdlib.h>
 #include <stdio.h>
 
 // debugging
@@ -17,7 +17,7 @@ void print_board() {
 }
 
 
-uint64_t bitboards[2 * PIECE_TYPES] = {0};
+uint64_t bitboards[12] = {0};
 uint64_t occupancy_board = 0;
 
 uint8_t board[SQUARES] = {0};
@@ -64,14 +64,16 @@ void FEN_reader(const char *FEN) {
     white_turn = (FEN[++i] == 'w');
 
     for (; FEN[i] != ' '; ++i) {
-        if ('A' < FEN[i] < 'Z')
+        if ('A' < FEN[i] &&  FEN[i] < 'Z')
             white_castle[FEN[i] != 'K'] = 1;
-        else if ('a' < FEN[i] < 'z')
+        else if ('a' < FEN[i] && FEN[i] < 'z')
             black_castle[FEN[i] != 'k'] = 1;
     }
     
-    if (FEN[++i] != '-')
-        ep_sq = alg_notation_to_sq(FEN[i], FEN[++i]);
+    if (FEN[++i] != '-') {
+        ep_sq = alg_notation_to_sq(FEN[i], FEN[i + 1]);
+        ++i;
+    }
 
     for (i += 2; FEN[i] != ' '; ++i)
         ply_count = ply_count * 10 + (FEN[i] - '0');
@@ -79,11 +81,40 @@ void FEN_reader(const char *FEN) {
     for (++i; FEN[i] != ' '; ++i)
         move_count = move_count * 10 + (FEN[i] - '0');
     
-    cur_state->board_state = fifty_counter << 14 | ep_sq << 4 | black_castle[1] << 3 | black_castle[0] << 2 | white_castle[1] << 1 | white_castle[0];
+    cur_state->state_info = fifty_counter << 14 | ep_sq << 4 | black_castle[1] << 3 | black_castle[0] << 2 | white_castle[1] << 1 | white_castle[0];
 }
 
-void undo_move(game_state *cur) {
-    cur_state = pop_move(cur);
+void pop_move() {
+    // Set current position to prior position
+    game_state *prev = cur_state->prev_state;
+    free(cur_state);
+    cur_state = prev;
 
+    // Update position info (i.e. castling, ep squares, etc.)
+    white_castle[0] = cur_state->state_info >> 15 & 1;
+    white_castle[1] = (cur_state->state_info >> 16 & 2) != 0;
+    black_castle[0] = (cur_state->state_info >> 17 & 4) != 0;
+    black_castle[1] = (cur_state->state_info >> 18 & 8) != 0;
 
+    ep_sq = (cur_state->state_info & EP_MASK) >> 19;
+    fifty_counter = cur_state->state_info >> 27;
+
+    ply_count--;
+    move_count -= white_turn;
+    white_turn = !white_turn;
+
+    // Replace pieces (i.e. undo move)
+    board[cur_state->state_info & SQUARE_MASK] = (cur_state->state_info >> 6) & SQUARE_MASK;
+    board[(cur_state->state_info >> 6) & SQUARE_MASK] = (cur_state->state_info & CAPTURE_MASK) >> 24;
+}
+
+void push_move(uint16_t move_made, uint8_t cap_piece) {
+    // Append new state to stack
+    game_state *new_state = malloc(sizeof(game_state));
+    new_state->prev_state = cur_state;
+    
+    new_state->state_info = move_made | white_castle[0] << 15 | white_castle[1] << 16 | black_castle[0] << 17 |\
+                            black_castle[1] << 18 | ep_sq << 19 | cap_piece << 24 | fifty_counter << 27;
+
+    cur_state = new_state;
 }

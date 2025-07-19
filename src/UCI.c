@@ -245,7 +245,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
         printf("%f %f\n", win.cursor_x / win.width, win.cursor_y / win.width);
         printf("rank: %d, file: %d, sq: %d, piece: %d\n", rank, file, t_sq, board[t_sq]);
 
-        if (board[t_sq]) {
+        if (board[t_sq] && is_white(board[t_sq]) == white_turn) {
             win.a_click = TRUE;
 
             piece = (a_piece){board[t_sq], t_sq, SPRITE_MAP[piece_type(board[t_sq])] / 6.0f, !is_white(board[t_sq]) / 2.0f};
@@ -281,7 +281,10 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
             
             occupancy_board &= ~(1ULL << piece.o_sq);
             occupancy_board |= 1ULL << t_sq;
-            // change turn
+
+            white_turn = !white_turn;
+            ply_count++;
+            move_count += !white_turn;
         }
         else  {
             board[piece.o_sq] = piece.type;
@@ -578,7 +581,7 @@ GLuint gen_texture() {
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border_color);  
 
     int width, height, num_channels;
-    uint8_t *data = stbi_load("ChessPiecesArray.png", &width, &height, &num_channels, 0);
+    uint8_t *data = stbi_load("pieces.png", &width, &height, &num_channels, 0);
 
     if (data == NULL) {
         printf("ERROR::TEXTURE::LOADING:Failed to load texture\n");

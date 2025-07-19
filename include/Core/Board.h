@@ -1,8 +1,8 @@
 #ifndef Board
 #define Board
 #include <stdint.h>
-#include "Pieces.h"
 #include "Move.h"
+#include "Pieces.h"
 
 #define SQUARES 64  // Number of squares on a chess board
 #define COLS 8      // Number of rows on a chess board
@@ -46,14 +46,17 @@ extern int black_castle[2];
 
 extern game_state *cur_state;
 
-// update state info to previous position's
-void undo_move(game_state *cur);
-
-void make_move(game_state *cur, int *ply_count, int *castling_rights, int *turn);
+// copy current state to a new node, 
+void push_move(uint16_t move_made, uint8_t cap_piece);
+// update most recent state as prev and return
+void pop_move();
 
 void FEN_reader(const char *position);
 
-int alg_notation_to_sq(char file, char rank);
+static inline int alg_notation_to_sq(char file, char rank) { return file - 'a' + ((rank - '1') << 3); }
+// << 3 = * 8
+// 1 << 3 = 1000 = 8, 2 << 3 = 10000 = 16, 3 << 3 = 11000 = 24, ...
 char *sq_to_alg_notation(int sq);
 
 #endif
+
