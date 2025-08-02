@@ -2,15 +2,15 @@
 #define Pieces
 #include <stdint.h>
 
-#define PIECE_TYPES         6   // Possible pieces (regardless of color)
+#define PIECE_TYPES 6   // Possible pieces (regardless of color)
 
-#define NONE     (uint8_t)0
-#define PAWN     (uint8_t)1
-#define KNIGHT   (uint8_t)2
-#define BISHOP   (uint8_t)3
-#define ROOK     (uint8_t)4
-#define QUEEN    (uint8_t)5
-#define KING     (uint8_t)6
+#define NONE     ((uint8_t)0)
+#define PAWN     ((uint8_t)1)
+#define KNIGHT   ((uint8_t)2)
+#define BISHOP   ((uint8_t)3)
+#define ROOK     ((uint8_t)4)
+#define QUEEN    ((uint8_t)5)
+#define KING     ((uint8_t)6)
 
 #define PAWN_VALUE       1 // Standard value of pawns
 #define KNIGHT_VALUE     3 // Standard value of knights
@@ -48,7 +48,7 @@
 // misc
 
 // Returns 0 or 1 depending on piece color
-static inline uint8_t is_white(uint8_t piece)                     { return (piece & COLOR_MASK) && (piece != NONE); }
+static inline uint8_t is_white(uint8_t piece)                     { return (piece & COLOR_MASK) == WHITE && (piece != NONE); }
 
 // returns piece color
 static inline uint8_t piece_color(uint8_t piece)                  { return piece & COLOR_MASK; }
@@ -59,35 +59,7 @@ static inline uint8_t piece_type(uint8_t piece)                   { return piece
 // returns a colored piece
 static inline uint8_t make_piece(uint8_t piece, uint8_t color)    { return piece | color; }
 
-static uint8_t get_piece_from_symbol(char symbol) {
-    switch (symbol) {
-        case 'p':
-        case 'P': return PAWN;
-        case 'n':
-        case 'N': return KNIGHT;
-        case 'b':
-        case 'B': return BISHOP;
-        case 'r':
-        case 'R': return ROOK;
-        case 'q':
-        case 'Q': return QUEEN;
-        case 'k':
-        case 'K': return KING;
-        default : return NONE;
-    }
-}
-
-static char get_symbol_from_piece(uint8_t piece) {
-    switch (piece) {
-        case PAWN:      return 'p';
-        case KNIGHT:    return 'n';
-        case BISHOP:    return 'b';
-        case ROOK:      return 'r';
-        case QUEEN:     return 'q';
-        case KING:      return 'k';
-        default:        return '\0';
-
-    }
-}
+uint8_t get_piece_from_symbol(char symbol);
+char get_symbol_from_piece(uint8_t piece);
 
 #endif

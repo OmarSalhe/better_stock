@@ -151,6 +151,9 @@ void cursor_pos_callback(GLFWwindow* window, double x_pos, double y_pos);
 // Callback for clicking
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
+// Callback for pressing key
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+
 // Creates a window context for later rendering
 GLFWwindow* create_context();
 
@@ -248,7 +251,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
         if (board[t_sq] && is_white(board[t_sq]) == white_turn) {
             win.a_click = TRUE;
 
-            piece = (a_piece){board[t_sq], t_sq, SPRITE_MAP[piece_type(board[t_sq])] / 6.0f, !is_white(board[t_sq]) / 2.0f};
+            piece = (a_piece){board[t_sq], t_sq, SPRITE_MAP[piece_type(board[t_sq])] / 6.0f, is_white(board[t_sq]) / 2.0f};
             board[t_sq] = NONE;
         }
     }
@@ -271,10 +274,14 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
         if (win.cursor_x > 0 && win.cursor_x < win.width && win. cursor_y > 0 && win.cursor_y < win.width) { // if legal move
             int t_sq = rank * ROWS + file;
+
+            push_move(move_made(piece.o_sq, t_sq, 0), board[t_sq]);
+            
             board[t_sq] = piece.type;
             
             int board_idx = piece_type(piece.type) + is_white(piece.type) * 6 - 1;
-            printf("rank: %d, file: %d, sq: %d, bitboard: %d\n", rank, file, t_sq, board_idx);
+            printf("rank: %d, file: %d, bitboard: %d\n", rank, file, board_idx);
+            printf("start: %d, end: %d\n", piece.o_sq, t_sq);
 
             bitboards[board_idx] &= ~(1ULL << piece.o_sq);
             bitboards[board_idx] |= 1ULL << t_sq;
@@ -286,11 +293,17 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
             ply_count++;
             move_count += !white_turn;
         }
-        else  {
+        else
             board[piece.o_sq] = piece.type;
-            // don't change turn
-        }
+
         win.a_click = FALSE;
+    }   
+}
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    if (!win.a_click && key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
+        printf("You pressed left\n");
+        pop_move();
     }
 }
 
@@ -326,6 +339,7 @@ GLFWwindow* create_context() {
     glfwSetFramebufferSizeCallback(window, frame_buffer_size_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetCursorPosCallback(window, cursor_pos_callback);
+    glfwSetKeyCallback(window, key_callback);
     return window;
 }
 
@@ -429,7 +443,7 @@ void gen_piece_offsets() {
         uint8_t color = is_white(board[sq]);
 
         offsets[i + 2] = SPRITE_MAP[piece] / 6.0f;
-        offsets[i + 3] = !color / 2.0f;
+        offsets[i + 3] = color / 2.0f;
         
         // printf("%d. %d -> %d %d\n", sq, board[sq], piece, color);
         // printf("%d. %d -> %d %d\n", sq, piece, SPRITE_MAP[piece], color);
@@ -777,7 +791,6 @@ int main() {
 
     FEN_reader(NULL);
     //     test positions
-    // FEN_reader("7r/8/8/8/8/8/8/8 ");
     // FEN_reader("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2");
     
 
