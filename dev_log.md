@@ -63,5 +63,33 @@
 ### Day 18 (i understand now)
 - Defined pawn captures and knight moves  
   
-***Next***: Finish up move boards, make attack_table for sliding piece (blocker configs)  
-***Bugs***: maybe some UB missed b/c of all the shifting done (none found so far though)  
+**Next**: Finish up move boards, make attack_table for sliding piece (blocker configs)  
+**Bugs**: maybe some UB missed b/c of all the shifting done (none found so far though)  
+  
+
+### Day 20
+- Finished move boards
+- Found a better source on magic bitboards
+  
+
+**Next**: Start finding magics and fill out attack table
+**Bugs**: Did not test, fingers cross none  
+  
+  
+### Day 22 (jinxed it)
+- Tested move boards and all were wrong
+- Fixed pawn capture boards  
+  
+
+**Next**: Fix move boards, generate magics, fill out attack table
+**Bugs**: ...
+
+### Day 24
+- Made sq_to_edge exclude starting point
+- Changed valid bit condition in knight move board
+
+**Next**: re-implement rook and bishop move boards
+
+### Day 32 (...omg)
+- 
+

@@ -1,5 +1,5 @@
-#ifndef Pieces
-#define Pieces
+#ifndef PIECES_H
+#define PIECES_H
 #include <stdint.h>
 
 #define PIECE_TYPES 6   // Possible pieces (regardless of color)

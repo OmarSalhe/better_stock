@@ -1,5 +1,5 @@
-#ifndef MoveData.h
-#define MoveData.h
+#ifndef MoveData
+#define MoveData
 #include <stdint.h>
 
 /**
@@ -27,21 +27,17 @@
  * 
  */
 
-#define sq_to_edge num_square_to_edge
+extern uint64_t pawn_capture_bitboard[][2];
+extern uint64_t knight_bitboard[];
+extern uint64_t king_bitboard[];
+extern uint64_t bishop_bitboard[];
+extern uint64_t rook_bitboard[];
 
-extern const int direction[];
-extern int num_square_to_edge[][];
+// contains a list of squares reachable by pieces
+extern int pawn_captures[][2][2];
+extern int knight_moves[][8];
+extern int king_moves[][8];
 
-extern uint64_t pawn_capture_board[][];
-extern const int pawn_attack_offset[][];
-
-extern uint64_t knight_move_board[];
-extern int knight_offset[];
-
-extern uint64_t king_move_board[];
-
-extern uint64_t* bishop_move_board[];
-extern uint64_t* rook_move_board[];
-extern uint64_t* queen_move_board[];
-
+extern uint64_t* attack_table[];
+extern uint64_t magic_table[];
 #endif

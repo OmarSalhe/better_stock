@@ -1,5 +1,5 @@
-#ifndef Move
-#define Move
+#ifndef MOVE_H
+#define MOVE_H
 
 typedef unsigned int uint;
 enum flags {NONE, ENPASSANT, CASTLE, PROMOTE_QUEEN, PROMOTE_ROOK, PROMOTE_BISHOP, PROMOTE_KNIGHT, PAWN_TWO_FORWARD};
